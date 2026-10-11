@@ -13,6 +13,10 @@ analytics, and no `INTERNET` permission.
    the dialer or video call app. The overlay absorbs all touches.
 4. **Unlock**: pull down the notification shade, which still sits above the overlay,
    and tap **Unlock**.
+5. **Quick Settings tile**: a "Freeze" tile in the pull-down shade that locks and
+   unlocks directly. It's the fastest way to lock during a call because it doesn't
+   need the widget first.
+6. **Auto-unlock**: when the call ends, the lock turns itself off.
 
 ### Typical flow during a call
 
@@ -24,18 +28,29 @@ Pull down the shade -> tap "Lock" -> swipe the shade back up
 Pull down the shade -> tap "Unlock"
 ```
 
+Or, with the tile:
+
+```
+On the call screen: pull down Quick Settings -> tap "Freeze" -> swipe the shade back up
+   ... locked ...
+Call ends -> unlocks automatically   (or tap the tile / "Unlock" in the shade)
+```
+
 The lock has to be turned on from the shade, not from the widget. If the widget
 locked the screen, the overlay would land on the home screen and you couldn't get
-back to the call. That's why the widget only starts Freeze.
+back to the call. That's why the widget only starts Freeze. **Decision: the widget
+never locks by itself.**
 
 ### States
 
 ```
-           widget tap                 notif "Lock"
-  [Off] ─────────────────> [Ready] ─────────────────> [Locked]
-    ^                        │  ^                        │
-    │      notif "Close"     │  │      notif "Unlock"    │
-    └────────────────────────┘  └────────────────────────┘
+           widget tap                 notif "Lock" / tile tap
+  [Off] ─────────────────> [Ready] ─────────────────────────> [Locked]
+    ^                        │  ^                                  │
+    │      notif "Close"     │  │  notif "Unlock" / tile tap /     │
+    └────────────────────────┘  └──── call ended (auto-unlock) ────┘
+
+  [Off] ── tile tap ──> [Locked]   (the tile skips Ready)
 ```
 
 - **Off**: nothing is running.
@@ -65,6 +80,10 @@ back to the call. That's why the widget only starts Freeze.
 | `FOREGROUND_SERVICE` | Run the foreground service | Granted at install |
 | `FOREGROUND_SERVICE_SPECIAL_USE` | Service type required on Android 14+ | Granted at install |
 
+Detecting the end of a call needs **no extra permission**. Instead of
+`READ_PHONE_STATE`, the app watches the audio mode (see 4.9). This also catches
+WhatsApp and other internet calls, which the telephony call-state API doesn't see.
+
 ## 3. Project layout
 
 Package name: `io.github.yanniboi.freeze` (can be changed).
@@ -85,7 +104,8 @@ freeze/
 │       │   ├── FreezeNotifications.kt   # channel + notification builder
 │       │   ├── FreezeWidgetProvider.kt  # home screen widget
 │       │   ├── Permissions.kt           # canDrawOverlays / notification checks
-│       │   └── FreezeTileService.kt     # (optional, phase 5) Quick Settings tile
+│       │   ├── FreezeTileService.kt     # Quick Settings tile
+│       │   └── CallMonitor.kt           # watches audio mode → auto-unlock on call end
 │       └── res/
 │           ├── layout/activity_main.xml
 │           ├── layout/widget_freeze.xml
@@ -116,6 +136,19 @@ freeze/
         <property
             android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
             android:value="User-controlled touchscreen lock overlay" />
+    </service>
+
+    <service
+        android:name=".FreezeTileService"
+        android:exported="true"
+        android:icon="@drawable/ic_stat_freeze"
+        android:label="@string/tile_label"
+        android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+        <intent-filter>
+            <action android:name="android.service.quicksettings.action.QS_TILE" />
+        </intent-filter>
+        <meta-data android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                   android:value="true" />
     </service>
 
     <receiver android:name=".FreezeWidgetProvider" android:exported="true">
@@ -161,7 +194,7 @@ val params = WindowManager.LayoutParams(
 }
 
 val view = FrameLayout(context).apply {
-    setBackgroundColor(0x14000000)            // ~8% black tint so you can tell it's on
+    setBackgroundColor(0x14000000)            // faint ~8% black tint (decided) so you can tell it's on
     setOnTouchListener { _, _ -> true }       // swallow every touch
     // + small lock badge in a corner that fades to low alpha after ~2s
 }
@@ -213,8 +246,12 @@ windowManager.addView(view, params)
   to make testing safe.
 - Settings, saved in `SharedPreferences`:
   - Keep the screen on while locked (default: on).
-  - Overlay tint strength (none / faint / dim).
+  - Overlay tint strength: none / **faint (default)** / dim.
   - Emergency unlock gesture on/off (see 4.7).
+  - Unlock automatically when the call ends (default: on, see 4.9).
+- A "How to add the Quick Settings tile" hint. On Android 13+ you can use
+  `StatusBarManager.requestAddTileService()`, which shows a one-tap "Add tile"
+  prompt from the setup screen.
 
 ### 4.7 Emergency unlock (safety net)
 
@@ -226,6 +263,44 @@ stuck with an unusable phone:
   off in settings.
 - A reboot always clears the lock, because the service is `START_NOT_STICKY`.
 
+### 4.8 Quick Settings tile (`FreezeTileService`)
+
+- The tile is **active** while locked and **inactive** otherwise. Its label is "Freeze"
+  and its subtitle is "Locked" or "Off" (subtitle needs API 29+).
+- **Tap**: toggles the lock. If Freeze is Off, it starts the service and goes
+  straight to Locked, skipping Ready, because you're already on the call screen
+  when you tap it.
+- `onStartListening()` reads the current state and calls `qsTile.updateTile()`. When
+  the state changes, the service calls `TileService.requestListeningState(ctx, component)`
+  so the tile refreshes even while the shade is closed.
+- Starting a foreground service from a tile tap: tile clicks get a temporary
+  exemption from the background-start limits, so `startForegroundService` should
+  work. **Verify this on Android 14+.** If it's blocked, the fallback is
+  `startActivityAndCollapse(PendingIntent)` to an invisible trampoline activity
+  that starts the service and finishes immediately.
+- If permissions are missing, the tap opens `MainActivity` using
+  `startActivityAndCollapse` instead.
+
+### 4.9 Auto-unlock when the call ends (`CallMonitor`)
+
+- Watches `AudioManager.mode` instead of the telephony call state:
+  - `MODE_IN_CALL` covers regular phone calls.
+  - `MODE_IN_COMMUNICATION` covers WhatsApp, Signal, Meet, Teams, Messenger and
+    other VoIP calls.
+  - This needs no permission. `READ_PHONE_STATE` would only cover regular phone calls.
+- API 31+: `AudioManager.addOnModeChangedListener(executor, listener)`.
+  API 26–30: poll `audioManager.mode` every ~2 seconds, only while locked. The cost
+  is negligible.
+- Rule: once the lock has seen an active call (whether it was active when the
+  screen was locked or started afterwards), the screen unlocks after the mode has
+  been back at `MODE_NORMAL` for **3 seconds**. The delay smooths over brief mode
+  changes during hold, call switching and similar.
+- If you lock with no call active (for example, to let a child watch a video), the
+  lock never unlocks itself.
+- When it auto-unlocks, the service goes back to Ready, the notification updates,
+  and there's a short vibration so you know touch is back.
+- The monitor only runs while the screen is Locked, and it's unregistered on unlock.
+
 ## 5. Build phases
 
 Each phase ends with something you can install and try.
@@ -236,8 +311,10 @@ Each phase ends with something you can install and try.
 | 1 | **Core overlay** | `OverlayController` + `FreezeService` + the "Test lock 5s" button in `MainActivity`; overlay-permission flow |
 | 2 | **Notification controls** | Channel, Ready/Locked notifications, Lock/Unlock/Close actions, tap-to-toggle body, re-post on dismissal, `POST_NOTIFICATIONS` request |
 | 3 | **Widget** | `FreezeWidgetProvider`, widget layout and preview, redirect to setup when permissions are missing |
-| 4 | **Safety & polish** | Emergency corner-tap unlock, keep-screen-on option, tint option, app icon, state-aware widget icon |
-| 5 | **Nice-to-haves** (optional) | Quick Settings tile (`TileService`) for locking straight from the shade, which skips the widget; GitHub Actions workflow that builds the APK |
+| 4 | **Quick Settings tile** | `FreezeTileService`, tile state sync, "Add tile" prompt on the setup screen |
+| 5 | **Auto-unlock on call end** | `CallMonitor` (audio-mode listener plus polling fallback), 3 s debounce, vibration, settings toggle |
+| 6 | **Safety & polish** | Emergency corner-tap unlock, keep-screen-on option, tint option, app icon, state-aware widget icon |
+| 7 | **CI** (optional) | GitHub Actions workflow that builds the APK |
 
 ## 6. Testing checklist
 
@@ -250,6 +327,8 @@ Run these on an emulator (API 26, 31, 34 and latest) and on your own phone:
 - [ ] Swiping the notification away re-posts it, and the corner-tap unlock works.
 - [ ] Killing the app (Settings → Force stop) or rebooting leaves the phone unlocked.
 - [ ] The widget starts Freeze. Without permissions, it opens the setup screen.
+- [ ] Tile: starting from Off it locks directly; it toggles correctly; its state matches after notification actions; it works on Android 14+ (background-start rules).
+- [ ] Auto-unlock: it unlocks about 3 s after a regular phone call ends and after a WhatsApp call ends. Putting the call on hold doesn't unlock it. Locking with no call active never auto-unlocks.
 - [ ] Screen timeout behaviour while locked, with keep-screen-on both on and off.
 - [ ] Locked state with the keyguard on: turn the screen off, then wake it while on a call.
 - [ ] Battery: no wakelocks or CPU use while Ready or Locked. The overlay is static.
@@ -287,14 +366,11 @@ Run these on an emulator (API 26, 31, 34 and latest) and on your own phone:
 - Optional: a GitHub Actions workflow builds the APK on every push and attaches
   it to a release.
 
-## 9. Open questions
+## 9. Decisions
 
-- Should the widget only show the notification (current plan), or should it also
-  lock straight away after a short countdown (e.g. 3 s, so you can switch back to
-  the call)?
-- Should the overlay be completely invisible, or have a faint tint with a lock
-  badge (current plan) so you can see at a glance that the lock is on?
-- Do you want the Quick Settings tile in v1? It's arguably more convenient than
-  the widget during a call.
-- Should the app unlock automatically when the call ends? That would need
-  `READ_PHONE_STATE`. It's not in the current plan, to keep permissions minimal.
+- **Widget**: only starts Freeze and shows the notification. It never locks by itself.
+- **Overlay look**: faint tint (~8% black) plus a small lock badge that fades.
+  Tint strength can be changed in settings.
+- **Quick Settings tile**: included in v1 (phase 4).
+- **Auto-unlock on call end**: included in v1 (phase 5). It uses the audio mode, so
+  it needs no extra permission and also covers VoIP calls.
