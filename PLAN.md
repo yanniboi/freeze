@@ -1,5 +1,8 @@
 # Freeze: touchscreen lock for Android (plan)
 
+> **Status:** phases 0–7 are implemented. See [README.md](README.md) for usage and builds.
+> On-device testing (section 6) is still to do.
+
 A small Android app that stops the touchscreen working while a call is in progress,
 so a child can carry the phone around without ending the call. It has no ads, no
 analytics, and no `INTERNET` permission.
@@ -288,9 +291,9 @@ stuck with an unusable phone:
   - `MODE_IN_COMMUNICATION` covers WhatsApp, Signal, Meet, Teams, Messenger and
     other VoIP calls.
   - This needs no permission. `READ_PHONE_STATE` would only cover regular phone calls.
-- API 31+: `AudioManager.addOnModeChangedListener(executor, listener)`.
-  API 26–30: poll `audioManager.mode` every ~2 seconds, only while locked. The cost
-  is negligible.
+- Polls `audioManager.mode` once a second, only while locked, on every Android
+  version. That's simpler than a mode-change listener (API 31+ only) plus a fallback,
+  and the cost is negligible while the screen is on anyway.
 - Rule: once the lock has seen an active call (whether it was active when the
   screen was locked or started afterwards), the screen unlocks after the mode has
   been back at `MODE_NORMAL` for **3 seconds**. The delay smooths over brief mode

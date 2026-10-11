@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">Freeze</string>
+
+    <!-- Setup screen -->
+    <string name="intro">Freeze locks the touchscreen during a call so little hands can carry the phone around without hanging up. Pull down the notification shade any time to unlock.</string>
+    <string name="section_setup">1. Set up</string>
+    <string name="perm_overlay">Display over other apps</string>
+    <string name="perm_notifications">Notifications</string>
+    <string name="status_allowed">Allowed ✓</string>
+    <string name="status_needed">Needed</string>
+    <string name="action_allow">Allow</string>
+    <string name="tile_row">Quick Settings tile</string>
+    <string name="action_add_tile">Add</string>
+    <string name="tile_hint">To lock straight from the pull-down shade, edit your Quick Settings and drag the Freeze tile in.</string>
+    <string name="widget_hint">Home screen widget: long-press your home screen → Widgets → Freeze. Tapping it shows the Freeze notification.</string>
+    <string name="tile_added">Freeze tile added to Quick Settings</string>
+    <string name="tile_not_added">Tile not added</string>
+    <string name="section_try">2. Try it</string>
+    <string name="action_show_notification">Show Freeze notification</string>
+    <string name="action_test_lock">Test lock for 5 seconds</string>
+    <string name="section_settings">3. Settings</string>
+    <string name="setting_keep_screen_on">Keep screen on while locked</string>
+    <string name="setting_auto_unlock">Unlock automatically when the call ends</string>
+    <string name="setting_emergency">Emergency unlock: tap the top-right corner 5 times</string>
+    <string name="setting_tint">Overlay tint</string>
+    <string name="tint_none">None</string>
+    <string name="tint_faint">Faint</string>
+    <string name="tint_dim">Dim</string>
+    <string name="section_tips">Tips</string>
+    <string name="tips">• During a call: pull down the shade and tap Lock (or the Freeze tile). Swipe the shade back up.\n\n• Unlock: pull down the shade and tap Unlock. It also unlocks by itself about 3 seconds after the call ends.\n\n• Turn off Settings → Accessibility → \"Power button ends call\" if your phone has it. No app can block the power button.\n\n• Home and back gestures still work while locked. They don\'t end calls, and the lock stays on top.\n\n• If \"Display over other apps\" is greyed out, open App info → ⋮ → Allow restricted settings, then try again.\n\n• Restarting the phone always clears the lock.</string>
+
+    <!-- Notification -->
+    <string name="channel_name">Touch lock</string>
+    <string name="channel_description">Controls for locking and unlocking the touchscreen</string>
+    <string name="notif_ready_title">Freeze is ready</string>
+    <string name="notif_ready_text">Tap to lock the touchscreen</string>
+    <string name="notif_locked_title">Touchscreen locked</string>
+    <string name="notif_locked_text">Tap to unlock</string>
+    <string name="notif_locked_text_auto">Tap to unlock. Unlocks itself when the call ends.</string>
+    <string name="notif_permission_title">Can\'t lock yet</string>
+    <string name="notif_permission_text">Allow \"Display over other apps\" for Freeze. Tap to fix.</string>
+    <string name="action_lock">Lock</string>
+    <string name="action_unlock">Unlock</string>
+    <string name="action_close">Close</string>
+
+    <!-- Tile and widget -->
+    <string name="tile_label">Freeze</string>
+    <string name="tile_locked">Locked</string>
+    <string name="tile_off">Off</string>
+    <string name="widget_label">Freeze</string>
+    <string name="widget_ready">Ready</string>
+    <string name="widget_locked">Locked</string>
+    <string name="widget_description">Shows the Freeze notification so you can lock the touchscreen</string>
+
+    <string name="overlay_description">Touchscreen locked. Pull down the notification shade to unlock.</string>
+</resources>

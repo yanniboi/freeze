@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textAppearance="@android:style/TextAppearance.Material.Headline" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/intro"
+            android:textAppearance="@android:style/TextAppearance.Material.Body1" />
+
+        <!-- 1. Set up -->
+        <TextView
+            style="@style/SectionHeader"
+            android:text="@string/section_setup" />
+
+        <LinearLayout style="@style/Row">
+
+            <LinearLayout style="@style/RowText">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/perm_overlay"
+                    android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
+
+                <TextView
+                    android:id="@+id/overlay_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Material.Caption" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/overlay_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_allow" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Row">
+
+            <LinearLayout style="@style/RowText">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/perm_notifications"
+                    android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
+
+                <TextView
+                    android:id="@+id/notification_status"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.Material.Caption" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/notification_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_allow" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/Row">
+
+            <LinearLayout style="@style/RowText">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tile_row"
+                    android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tile_hint"
+                    android:textAppearance="@android:style/TextAppearance.Material.Caption" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/tile_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_add_tile" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/widget_hint"
+            android:textAppearance="@android:style/TextAppearance.Material.Body1" />
+
+        <!-- 2. Try it -->
+        <TextView
+            style="@style/SectionHeader"
+            android:text="@string/section_try" />
+
+        <Button
+            android:id="@+id/start_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_show_notification" />
+
+        <Button
+            android:id="@+id/test_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_test_lock" />
+
+        <!-- 3. Settings -->
+        <TextView
+            style="@style/SectionHeader"
+            android:text="@string/section_settings" />
+
+        <Switch
+            android:id="@+id/keep_screen_on_switch"
+            style="@style/SettingSwitch"
+            android:text="@string/setting_keep_screen_on" />
+
+        <Switch
+            android:id="@+id/auto_unlock_switch"
+            style="@style/SettingSwitch"
+            android:text="@string/setting_auto_unlock" />
+
+        <Switch
+            android:id="@+id/emergency_switch"
+            style="@style/SettingSwitch"
+            android:text="@string/setting_emergency" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/setting_tint"
+            android:textAppearance="@android:style/TextAppearance.Material.Subhead" />
+
+        <RadioGroup
+            android:id="@+id/tint_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/tint_none"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tint_none" />
+
+            <RadioButton
+                android:id="@+id/tint_faint"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/tint_faint" />
+
+            <RadioButton
+                android:id="@+id/tint_dim"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="@string/tint_dim" />
+        </RadioGroup>
+
+        <!-- Tips -->
+        <TextView
+            style="@style/SectionHeader"
+            android:text="@string/section_tips" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/tips"
+            android:textAppearance="@android:style/TextAppearance.Material.Body1" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,8 @@
+<resources>
+    <style name="Theme.Freeze" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:colorAccent">@color/freeze_blue</item>
+        <item name="android:colorPrimary">@color/freeze_blue</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

@@ -1,0 +1,17 @@
+# Gradle / build output
+.gradle/
+.kotlin/
+build/
+/app/build/
+
+# Local machine config
+local.properties
+.idea/
+*.iml
+.DS_Store
+captures/
+
+# Signing secrets: never commit these
+keystore.properties
+*.jks
+*.keystore
