@@ -3,14 +3,18 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- 24-unit glyph scaled to 54dp and centred inside the adaptive-icon safe zone. -->
-    <group
-        android:scaleX="2.25"
-        android:scaleY="2.25"
-        android:translateX="27"
-        android:translateY="27">
-        <path
-            android:fillColor="#FFFFFFFF"
-            android:pathData="M22,11h-4.17l3.24,-3.24 -1.41,-1.42L15,11h-2V9l4.66,-4.66 -1.42,-1.41L13,6.17V2h-2v4.17L7.76,2.93 6.34,4.34 11,9v2H9L4.34,6.34 2.93,7.76 6.17,11H2v2h4.17l-3.24,3.24 1.41,1.42L9,13h2v2l-4.66,4.66 1.42,1.41L11,17.83V22h2v-4.17l3.24,3.24 1.42,-1.41L13,15v-2h2l4.66,4.66 1.41,-1.42L17.83,13H22z" />
-    </group>
+    <!-- Shield: white, with a frosted right half for a little depth. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M54,25 L77,33 L77,52 C77,67.5 66.5,78.5 54,85 C41.5,78.5 31,67.5 31,52 L31,33 Z" />
+    <path
+        android:fillColor="#FFE0F3FD"
+        android:pathData="M54,25 L77,33 L77,52 C77,67.5 66.5,78.5 54,85 Z" />
+    <!-- Snowflake: six arms with a V of branches on each. -->
+    <path
+        android:pathData="M54,53.5 L54,38.5 M54,45 L57.89,41.11 M54,45 L50.11,41.11 M54,53.5 L41.01,46 M46.64,49.25 L45.22,43.94 M46.64,49.25 L41.33,50.67 M54,53.5 L41.01,61 M46.64,57.75 L41.33,56.33 M46.64,57.75 L45.22,63.06 M54,53.5 L54,68.5 M54,62 L50.11,65.89 M54,62 L57.89,65.89 M54,53.5 L66.99,61 M61.36,57.75 L62.78,63.06 M61.36,57.75 L66.67,56.33 M54,53.5 L66.99,46 M61.36,49.25 L66.67,50.67 M61.36,49.25 L62.78,43.94"
+        android:strokeColor="#FF1C78BC"
+        android:strokeWidth="3.4"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
 </vector>

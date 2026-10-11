@@ -1,6 +1,5 @@
 <resources>
-    <color name="freeze_blue">#FF1E6FD9</color>
-    <color name="launcher_background">#FF1E6FD9</color>
+    <color name="freeze_blue">#FF1C78BC</color>
     <color name="widget_background">#E6FFFFFF</color>
     <color name="widget_foreground">#FF1B1B1F</color>
 </resources>
